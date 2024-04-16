@@ -231,14 +231,8 @@ const createProxy = (
                     if (
                         fetchInit.body !== undefined &&
                         !fetchInit.headers['content-type']
-                    )
-                        if (typeof fetchInit.body === 'object') {
-                            ;(fetchInit.headers as Record<string, string>)[
-                                'content-type'
-                            ] = 'application/json'
-
-                            fetchInit.body = JSON.stringify(fetchInit.body)
-                        } else if (hasFile(fetchInit.body)) {
+                    ) {
+                        if (hasFile(fetchInit.body)) {
                             const formData = new FormData()
 
                             // FormData is 1 level deep
@@ -291,11 +285,19 @@ const createProxy = (
                             }
 
                             fetchInit.body = formData
+                        } else if (typeof fetchInit.body === 'object') {
+                            ;(fetchInit.headers as Record<string, string>)[
+                                'content-type'
+                            ] = 'application/json'
+
+                            fetchInit.body = JSON.stringify(fetchInit.body)
                         } else if (fetchInit.body !== undefined) {
                             ;(fetchInit.headers as Record<string, string>)[
                                 'content-type'
                             ] = 'text/plain'
                         }
+                    }
+                        
 
                     const url = domain + path + q
 
